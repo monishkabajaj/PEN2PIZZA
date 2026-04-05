@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cart</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2 class="logo">🛒 My Cart</h2>
+    <a href="products.html" class="cart-btn">⬅ Back</a>
+</div>
+
+<div class="container">
+    <div id="cartItems"></div>
+</div>
+
+<script>
+
+async function loadCart() {
+
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const res = await fetch("http://localhost:5000/api/products");
+    const products = await res.json();
+
+    const container = document.getElementById("cartItems");
+
+    container.innerHTML = "";
+
+    cart.forEach(id => {
+
+        const product = products.find(p => p._id === id);
+
+        if(product){
+
+            container.innerHTML += `
+                <div class="card">
+                    <img src="http://localhost:5000${product.image}">
+                    <h3>${product.title}</h3>
+                    <p>₹${product.price}</p>
+                </div>
+            `;
+        }
+
+    });
+}
+
+loadCart();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seller Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2 class="logo">💼 Seller Dashboard</h2>
+    <a href="products.html" class="cart-btn">⬅ Back</a>
+</div>
+
+<div class="container">
+
+    <h2 class="explore">Incoming Orders</h2>
+    <div id="orders"></div>
+
+</div>
+
+<script>
+
+async function loadSellerOrders() {
+
+    const sellerId = localStorage.getItem("userId");
+
+    const res = await fetch(`http://localhost:5000/api/orders/seller/${sellerId}`);
+    const orders = await res.json();
+
+    const productRes = await fetch("http://localhost:5000/api/products");
+    const products = await productRes.json();
+
+    const container = document.getElementById("orders");
+
+    container.innerHTML = "";
+
+    orders.forEach(o => {
+
+        const product = products.find(p => p._id === o.productId);
+
+        container.innerHTML += `
+            <div class="card">
+                <h3>${product ? product.title : "Product"}</h3>
+                <p>₹${product ? product.price : ""}</p>
+                <p>Status: ${o.status}</p>
+
+                ${
+                    o.status === "Pending"
+                    ? `
+                    <button onclick="acceptOrder('${o._id}')">✅ Accept</button>
+                    <button onclick="rejectOrder('${o._id}')">❌ Reject</button>
+                    `
+                    : ""
+                }
+            </div>
+        `;
+    });
+}
+
+// ACCEPT
+async function acceptOrder(id) {
+
+    await fetch(`http://localhost:5000/api/orders/accept/${id}`, {
+        method: "POST"
+    });
+
+    alert("Accepted ✅");
+    loadSellerOrders();
+}
+
+// REJECT
+async function rejectOrder(id) {
+
+    await fetch(`http://localhost:5000/api/orders/reject/${id}`, {
+        method: "POST"
+    });
+
+    alert("Rejected ❌");
+    loadSellerOrders();
+}
+
+loadSellerOrders();
+
+</script>
+
+</body>
+</html>

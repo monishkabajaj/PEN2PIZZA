@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pen2Pizza</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <h2 class="logo">Pen2Pizza 🛍️</h2>
+
+    <div>
+        <input id="search" placeholder="🔍 Search..." onkeyup="searchProduct()">
+        <a href="cart.html" class="cart-btn">🛒 Cart</a>
+        <a href="profile.html" class="cart-btn">👤 Profile</a>
+        <a href="seller.html" class="cart-btn">💼 Seller</a>
+        <a href="freelancer.html" class="cart-btn">💻 Freelance</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="form-box">
+        <h2>Sell Product</h2>
+
+        <input id="productName" placeholder="Product Name">
+        <input id="productPrice" placeholder="Price">
+        <textarea id="productDesc" placeholder="Description"></textarea>
+        <input type="file" id="productImage">
+
+        <button onclick="addProduct()">Post Ad</button>
+    </div>
+
+    <h2 class="explore">Explore Products</h2>
+    <div id="productList"></div>
+
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

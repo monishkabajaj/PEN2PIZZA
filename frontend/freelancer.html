@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Freelancers</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2 class="logo">💻 Freelancers</h2>
+    <a href="products.html" class="cart-btn">⬅ Back</a>
+</div>
+
+<div class="container">
+
+    <!-- CREATE PROFILE -->
+    <div class="form-box">
+        <h2>Create Your Freelancer Profile</h2>
+
+        <input id="fname" placeholder="Your Name">
+        <input id="skills" placeholder="Skills (e.g Web Dev, Design)">
+        <input id="price" placeholder="Price ₹">
+        <textarea id="bio" placeholder="About you"></textarea>
+        <input id="contact" placeholder="Email / Phone">
+
+        <button onclick="createProfile()">Create Profile</button>
+    </div>
+
+    <h2 class="explore">Available Freelancers</h2>
+    <div id="freelancers"></div>
+
+</div>
+
+<script>
+
+async function createProfile() {
+
+    const userId = localStorage.getItem("userId");
+
+    const data = {
+        userId,
+        name: document.getElementById("fname").value,
+        skills: document.getElementById("skills").value,
+        price: document.getElementById("price").value,
+        bio: document.getElementById("bio").value,
+        contact: document.getElementById("contact").value
+    };
+
+    await fetch("http://localhost:5000/api/freelancer/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+
+    alert("Profile Created 🚀");
+
+    loadFreelancers();
+}
+
+
+async function loadFreelancers() {
+
+    const res = await fetch("http://localhost:5000/api/freelancer");
+    const data = await res.json();
+
+    const container = document.getElementById("freelancers");
+
+    container.innerHTML = "";
+
+    data.forEach(f => {
+
+        container.innerHTML += `
+            <div class="card">
+                <h3>${f.name}</h3>
+                <p><b>Skills:</b> ${f.skills}</p>
+                <p><b>Price:</b> ₹${f.price}</p>
+                <p>${f.bio}</p>
+                <p><b>Contact:</b> ${f.contact}</p>
+
+                <button onclick="hire('${f.contact}')">Hire</button>
+            </div>
+        `;
+    });
+}
+
+function hire(contact){
+    alert("Contact: " + contact);
+}
+
+loadFreelancers();
+
+</script>
+
+</body>
+</html>

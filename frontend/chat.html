@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        .chat-box {
+            height: 400px;
+            overflow-y: auto;
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .msg {
+            margin: 8px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 60%;
+        }
+
+        .me {
+            background: #0077ff;
+            color: white;
+            margin-left: auto;
+        }
+
+        .other {
+            background: #eee;
+        }
+
+        .send-box {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>💬 Chat</h2>
+
+    <div id="chat" class="chat-box"></div>
+
+    <div class="send-box">
+        <input id="msg" placeholder="Type message...">
+        <button onclick="sendMsg()">Send</button>
+    </div>
+
+</div>
+
+<script>
+
+const urlParams = new URLSearchParams(window.location.search);
+const receiverId = urlParams.get("user");
+
+const senderId = localStorage.getItem("userId");
+
+async function loadChat() {
+
+    try {
+
+        const res = await fetch(`http://localhost:5000/api/chat/${senderId}/${receiverId}`);
+        const data = await res.json();
+
+        const box = document.getElementById("chat");
+
+        box.innerHTML = "";
+
+        data.forEach(m => {
+
+            const div = document.createElement("div");
+
+            div.classList.add("msg");
+
+            if(m.senderId === senderId){
+                div.classList.add("me");
+            } else {
+                div.classList.add("other");
+            }
+
+            div.innerText = m.text;
+
+            box.appendChild(div);
+        });
+
+        box.scrollTop = box.scrollHeight;
+
+    } catch (err) {
+        console.log("CHAT LOAD ERROR:", err);
+    }
+}
+async function sendMsg() {
+
+    console.log("SEND CLICKED");
+
+    const input = document.getElementById("msg");
+    const text = input.value;
+
+    if (!text) return;
+
+    if(!senderId){
+        alert("Login first ❌");
+        return;
+    }
+
+    if(!receiverId){
+        alert("Receiver missing ❌");
+        return;
+    }
+
+    try {
+
+        const res = await fetch("http://localhost:5000/api/chat/send", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                senderId,
+                receiverId,
+                text
+            })
+        });
+
+        console.log("STATUS:", res.status);
+
+        // ✅ show in UI
+        const box = document.getElementById("chat");
+
+        const div = document.createElement("div");
+        div.classList.add("msg", "me");
+        div.innerText = text;
+
+        box.appendChild(div);
+
+        input.value = "";
+        box.scrollTop = box.scrollHeight;
+
+    } catch (err) {
+        console.log("ERROR:", err);
+        alert("Message failed ❌");
+    }
+}
+
+// AUTO REFRESH CHAT 🔥
+setInterval(loadChat, 2000);
+
+loadChat();
+
+</script>
+
+</body>
+</html>
