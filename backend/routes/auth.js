@@ -4,7 +4,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const SECRET = "secret123";
+const SECRET = process.env.JWT_SECRET || "secret123";
 
 
 // ================= SIGNUP (AFTER OTP VERIFY FRONTEND) =================
